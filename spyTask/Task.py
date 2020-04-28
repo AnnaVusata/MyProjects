@@ -79,13 +79,13 @@ class MyApp(spyre.server.App):
                  'id': 'press_me',
                  'label': 'Press Me'}]
 
-    tabs = ["Plot", "Table1"]
+    tabs = ["Table1", "Plot"]
 
     def getInfo(self, params):
         year = int(params['year'])
         FirstWeek = int(params['FirstWeek'])       
         LastWeek = int(params['LastWeek']) 
-        pr = params['province']
+        pr =int(params['province'])
         f = df[(df['year'] == year) & (df['Province'] == pr) & (df['week'] >= FirstWeek) & (df['week'] <= LastWeek)] [['year', 'week', 'VHI', 'TCI', 'VCI']]
         return f
 
@@ -96,4 +96,4 @@ class MyApp(spyre.server.App):
 
 
 app = MyApp()
-app.launch(port=3040)
+app.launch(port=4030)
