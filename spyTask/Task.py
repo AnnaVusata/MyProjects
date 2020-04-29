@@ -70,16 +70,26 @@ class MyApp(spyre.server.App):
                 'tab': 'Table1'},
 
                {'type': 'plot',
-                'id': 'plot',
+                'id': 'getPlot1',
                 'control_id': 'press_me',
-                'tab': 'Plot'},
+                'tab': 'Plot1'},
+
+                {"type": "table",
+                "id": "getMean",
+                'control_id': 'press_me',
+                'tab': 'Table2'},
+
+               {'type': 'plot',
+                'id': 'getPlot2',
+                'control_id': 'press_me',
+                'tab': 'Plot2'},
                 ]
 
     controls = [{"type": 'button',
                  'id': 'press_me',
                  'label': 'Press Me'}]
 
-    tabs = ["Table1", "Plot"]
+    tabs = ["Table1", "Plot1","Table2", "Plot2"]
 
     def getInfo(self, params):
         year = int(params['year'])
@@ -87,12 +97,33 @@ class MyApp(spyre.server.App):
         LastWeek = int(params['LastWeek']) 
         pr =int(params['province'])
         f = df[(df['year'] == year) & (df['Province'] == pr) & (df['week'] >= FirstWeek) & (df['week'] <= LastWeek)] [['year', 'week', 'VHI', 'TCI', 'VCI']]
+        print(f)
         return f
 
-    def getPlot(self, params):
+    def getPlot1(self, params):
         df = self.getInfo(params)
         f = df[['VCI', 'TCI', 'VHI']]
         return f.set_index(df['week']).plot()
+        
+
+    def getMean(self, params):
+        year = int(params['year'])
+        pr =int(params['province'])
+        result = pd.DataFrame(columns =['year', 'Mean','Province'])
+        for i in range(1, 13):
+            monthes = df[(df['week'] > 4*(i-1)) & (df['week'] <= 4*i)]
+            Meann = monthes[(df['year']==year) & (df['Province']==pr)][['VHI']].mean()
+            Mean = int(Meann) 
+            new_line = {'year':year,'Month':i, 'Mean':Mean,'Province':pr}
+            result = result.append(new_line, ignore_index=True) 
+
+        print(result)
+        return result
+
+    def getPlot2(self, params):
+        df = self.getMean(params)
+        f = df[['Mean']]
+        return f.set_index(df['Month']).plot()
 
 
 app = MyApp()
